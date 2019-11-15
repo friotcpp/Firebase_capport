@@ -8,8 +8,8 @@
 #include <EEPROM.h>
 
 //===Firebase===//
-#define FIREBASE_HOST "esp8266-acdc2.firebaseio.com"
-#define FIREBASE_AUTH "tacD26Q0KkyLBAJ5xYzbzt0wS5nEJbp7BFnRBaRY"
+#define FIREBASE_HOST "use different host"
+#define FIREBASE_AUTH "secret key"
 
 /* Set these to your desired softAP credentials. They are not configurable at runtime */
 #define APSSID "ESP_ap2"
