@@ -9,7 +9,7 @@
 
 //===Firebase===//
 #define FIREBASE_HOST "use different host"
-#define FIREBASE_AUTH "secret key"
+#define FIREBASE_AUTH ""
 
 /* Set these to your desired softAP credentials. They are not configurable at runtime */
 #define APSSID "ESP_ap2"
