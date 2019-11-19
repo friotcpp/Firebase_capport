@@ -6,10 +6,29 @@
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
+#include <ArduinoJson.h>//add json library
+//========================EP Setup========================================//
+const int interruptPin = 5;//GPIO5, pin labeled 'D1' ESP8266-12e NodeMCU
+long timeStart; //time stamp for setup time out
+int inWifiKey =0;//if main is connected to wifi
+int wifiPort =8080;//set port
+bool setupEndpointGO = false;//setupmode flag
+bool timeOUT =true;//flag for timeout startpoint
+WiFiServer wifiserver(wifiPort);//server made for ESP endpoint modules only
+String wifiINFO; //string for JSON information of WIFI network
+
+//ISR function call declared before setup, prevents compiling issues
+ICACHE_RAM_ATTR void setupISR() {
+  noInterrupts();  //prevents interrupt while in ISR
+  Serial.println("Interrupt service routine ");
+  setupEndpointGO = true;//turns on setup 'flag'
+    }
+//=========================================================================//
+
 
 //===Firebase===//
 #define FIREBASE_HOST "use different host"
-#define FIREBASE_AUTH ""
+#define FIREBASE_AUTH "2"
 
 /* Set these to your desired softAP credentials. They are not configurable at runtime */
 #define APSSID "ESP_ap2"
@@ -61,6 +80,7 @@ FirebaseJson json;
 
 //====setup===//
 void setup() {
+    delay(1500);
   //output setup
   pinMode(led, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
@@ -75,9 +95,13 @@ void setup() {
   pinMode(14, OUTPUT);
   digitalWrite(led, 0); //indication led
   //
+    //========================================================================//
+
+ // pinMode(LED_BUILTIN, OUTPUT); //led turns on while client is connected
+  Serial.begin(115200);//changed from example baud rate
+  pinMode(interruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), setupISR, FALLING);
   
-  delay(1000);
-  Serial.begin(115200);
   Serial.println();
   //ClearCredentials();
   Serial.println("Configuring access point...");
@@ -89,6 +113,9 @@ void setup() {
   Serial.print("AP IP address: ");
   Serial.println(WiFi.softAPIP());
 
+ wifiserver.begin();
+   Serial.print("Started wifiserver on port: ");
+   Serial.println(wifiPort);
   /* Setup the DNS server redirecting all the domains to the apIP */
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
   // if DNSServer is started with "*" for domain name, it will reply with
@@ -147,6 +174,7 @@ void loop() {
         } else {
           Serial.println("mDNS responder started");
           // Add service to MDNS-SD
+          inWifiKey =1;     //boolean true if connect to wifi 
           MDNS.addService("http", "tcp", 80);
         }
 
@@ -183,6 +211,7 @@ void loop() {
         
         
       } else if (s == WL_NO_SSID_AVAIL) {
+        inWifiKey =0;//no connection flag
         WiFi.disconnect();
       }
     }
@@ -190,6 +219,11 @@ void loop() {
       MDNS.update();
     }
   }
+  if (setupEndpointGO){//if in settining up mode, may modify to a while loop
+      if(wifiINFO=="")//fills out wifi json info only once
+      loadWifiInfo();//goes to json void for wifi info
+      setupMode();
+    }//end setup mode if statement
   // Do work:
   //DNS
   dnsServer.processNextRequest();
