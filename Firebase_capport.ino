@@ -6,6 +6,8 @@
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
+#include <TimeLib.h> 
+#include <WiFiUdp.h>
 
 //===Firebase===//
 #define FIREBASE_HOST "use different host"
@@ -58,6 +60,13 @@ unsigned int status = WL_IDLE_STATUS;
 //Define FirebaseESP8266 data object
 FirebaseData firebaseData;
 FirebaseJson json;
+
+// NTP Servers:
+IPAddress timeServer;
+const char* ntpServerName = "0.north-america.pool.ntp.org";
+const int timeZone = -8;  // Pacific Standard Time (USA)
+WiFiUDP Udp;
+unsigned int localPort = 8888;  // local port to listen for UDP packets
 
 //====setup===//
 void setup() {
@@ -113,7 +122,13 @@ void setup() {
   connect = strlen(ssid) > 0; // Request WLAN connect if there is a SSID
   dnsServer.start(DNS_PORT, "*", apIP);
 
+  //More NTP settings
+  WiFi.hostByName(ntpServerName,timeServer);
+  Udp.begin(localPort);
+  setSyncProvider(getNtpTime);
 }
+
+time_t prevDisplay = 0; // when the digital clock was displayed
 
 void loop() {
   if (connect) {
@@ -161,7 +176,7 @@ void loop() {
         Firebase.setwriteSizeLimit(firebaseData, "tiny");
         
         //set IP with debug info in serial output
-        if (Firebase.setString(firebaseData,  "/Wifi_IP" , toStringIp(WiFi.localIP())))
+        if (Firebase.setString(firebaseData,  "/Wifi_IP" + logtime(), toStringIp(WiFi.localIP())))
         {
           Serial.println("PASSED");
           Serial.println("PATH: " + firebaseData.dataPath());
