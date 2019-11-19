@@ -20,7 +20,7 @@ String checkColor(String device, String command)
     digitalWrite(4, int(command[2])-'0'); 
     digitalWrite(5, int(command[3])-'0');
     //===Firebase update===//
-    Firebase.setString(firebaseData,  "/Device1" , ColorNames[color_num]);
+    Firebase.setString(firebaseData,  "/Device1" + logtime() , ColorNames[color_num]);
     return ColorNames[color_num];
    }
   else if (device == Device2)
@@ -30,7 +30,7 @@ String checkColor(String device, String command)
     digitalWrite(12, int(command[2]^1)-'0'); 
     digitalWrite(14, int(command[3])-'0');
     //===Firebase update===//
-    Firebase.setString(firebaseData,  "/Device2" , ColorNames[color_num]);
+    Firebase.setString(firebaseData,  "/Device2" + logtime(), ColorNames[color_num]);
     return ColorNames[color_num];
   }
   else if (device == AllDevice)
@@ -44,8 +44,8 @@ String checkColor(String device, String command)
     digitalWrite(12, int(command[2]^1)-'0'); 
     digitalWrite(14, int(command[3])-'0');
     //===Firebase update===//
-    Firebase.setString(firebaseData,  "/Device1" , ColorNames[color_num]);
-    Firebase.setString(firebaseData,  "/Device2" , ColorNames[color_num]);
+    Firebase.setString(firebaseData,  "/Device1" + logtime(), ColorNames[color_num]);
+    Firebase.setString(firebaseData,  "/Device2" + logtime(), ColorNames[color_num]);
     return ColorNames[color_num];
   }
   return error_color;
