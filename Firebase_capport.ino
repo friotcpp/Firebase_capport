@@ -6,6 +6,7 @@
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
+#include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>//add json library
 //========================EP Setup========================================//
 const int interruptPin = 5;//GPIO5, pin labeled 'D1' ESP8266-12e NodeMCU
