@@ -87,6 +87,6 @@ String logtime(){
   if (second() < 10)
     realtime = realtime + "0";
   realtime = realtime + String(second());
-  return ("/" + String(year()) + "." + String(month()) + "." + String(day()) + "/" + realtime);
+  return ("/" + String(year()) + "-" + String(month()) + "-" + String(day()) + "/" + realtime);
   }
   

@@ -10,8 +10,8 @@
 #include <WiFiUdp.h>
 
 //===Firebase===//
-#define FIREBASE_HOST "use different host"
-#define FIREBASE_AUTH "secret key"
+#define FIREBASE_HOST "esp8266-acdc2.firebaseio.com"
+#define FIREBASE_AUTH "tacD26Q0KkyLBAJ5xYzbzt0wS5nEJbp7BFnRBaRY"
 
 /* Set these to your desired softAP credentials. They are not configurable at runtime */
 #define APSSID "ESP_ap2"
@@ -118,14 +118,11 @@ void setup() {
   
   server.begin(); // Web server start
   Serial.println("HTTP server started");
-  //loadCredentials(); // Load WLAN credentials from network
+  loadCredentials(); // Load WLAN credentials from network
   connect = strlen(ssid) > 0; // Request WLAN connect if there is a SSID
   dnsServer.start(DNS_PORT, "*", apIP);
 
-  //More NTP settings
-  WiFi.hostByName(ntpServerName,timeServer);
-  Udp.begin(localPort);
-  setSyncProvider(getNtpTime);
+  
 }
 
 time_t prevDisplay = 0; // when the digital clock was displayed
@@ -155,6 +152,11 @@ void loop() {
         Serial.println(ssid);
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());
+
+        //More NTP settings
+        WiFi.hostByName(ntpServerName,timeServer);
+        Udp.begin(localPort);
+        setSyncProvider(getNtpTime);
         
         // Setup MDNS responder
         if (!MDNS.begin(myHostname)) {
@@ -174,9 +176,9 @@ void loop() {
         //tiny, small, medium, large and unlimited.
         //Size and its write timeout e.g. tiny (1s), small (10s), medium (30s) and large (60s).
         Firebase.setwriteSizeLimit(firebaseData, "tiny");
-        
+
         //set IP with debug info in serial output
-        if (Firebase.setString(firebaseData,  "/Wifi_IP" + logtime(), toStringIp(WiFi.localIP())))
+        if (Firebase.setString(firebaseData,  "/Wifi_IP" + logtime() , toStringIp(WiFi.localIP())))
         {
           Serial.println("PASSED");
           Serial.println("PATH: " + firebaseData.dataPath());
@@ -186,6 +188,7 @@ void loop() {
           printResult(firebaseData);
           Serial.println("------------------------------------");
           Serial.println();
+          Serial.println(logtime());
          }
          else
          {
@@ -193,6 +196,7 @@ void loop() {
             Serial.println("REASON: " + firebaseData.errorReason());
             Serial.println("------------------------------------");
             Serial.println();
+            Serial.println(logtime());
            }
         //===FireBase==//
         
