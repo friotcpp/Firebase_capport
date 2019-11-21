@@ -12,10 +12,10 @@ void handleCommand() {
 }
 void toEP(String EPname, String EPCommand){
 
-  EPname = "EPRGB";
+  EPname = "http://EPRGB/recieve";
       Serial.println("Connecting to " + EPname);
    HTTPClient http;    //Declare object of class HTTPClient
-   http.begin("http://"+EPname+"/recieve");      //Specify request destination
+   http.begin(EPname);      //Specify request destination
    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
    int httpCode = http.POST("Command"+EPCommand);   //Send the request
    String payload = http.getString();          //Get the response payload

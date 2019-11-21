@@ -9,7 +9,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>//add json library
 //========================EP Setup========================================//
-const int interruptPin = 5;//GPIO5, pin labeled 'D1' ESP8266-12e NodeMCU
+const int interruptPin = 10;//GPIO10, pin labeled 'SD3' ESP8266-12e NodeMCU
 long timeStart; //time stamp for setup time out
 int inWifiKey =0;//if main is connected to wifi
 int wifiPort =8080;//set port
