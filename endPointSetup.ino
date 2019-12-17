@@ -25,10 +25,15 @@ void endpointSetup(){//endpoint setup function
       setupEndpointGO = false;//pairing mode successful on main side
       Serial.println("Authenticated Client");
       Serial.print("Information sending to the station: ");
-      Serial.println(wifiINFO);//only for debugging purposes        
+      Serial.println(wifiINFO);//only for debugging purposes   
+      EPSave = true;     
      }
-     
-    // Decode JSON/Extract values, if no error
+     if (EPSave = true) {
+      int epcode = jsonBuffer["type"].as<int>();
+      char NfromEP = jsonBuffer["Name"].as<char>();
+      SaveDevice(epcode, NfromEP);
+      }
+
     Serial.println(F("Info Payload:"));
     Serial.println(jsonBuffer["type"].as<char*>());
     Serial.println(jsonBuffer["Name"].as<char*>());

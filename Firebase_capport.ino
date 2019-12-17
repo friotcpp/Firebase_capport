@@ -11,10 +11,15 @@
 //========================EP Setup========================================//
 const int interruptPin = 10;//GPIO10, pin labeled 'SD3' ESP8266-12e NodeMCU
 long timeStart; //time stamp for setup time out
+int loopLock = 2;//extra logic to set priority to functiona in main
 int inWifiKey =0;//if main is connected to wifi
 int wifiPort =8080;//set port
 bool setupEndpointGO = false;//setupmode flag
 bool timeOUT =true;//flag for timeout startpoint
+bool EPSave = false;
+const char *epid = "abcde";
+int epcodes[5];
+String setNames[5];
 WiFiServer wifiserver(wifiPort);//server made for ESP endpoint modules only
 String wifiINFO; //string for JSON information of WIFI network
 
@@ -220,7 +225,7 @@ void loop() {
       MDNS.update();
     }
   }
-  if (setupEndpointGO){//if in settining up mode, may modify to a while loop
+  if (setupEndpointGO&loopLock<3){//if in settining up mode, may modify to a while loop
       if(wifiINFO=="")//fills out wifi json info only once
       loadWifiInfo();//goes to json void for wifi info
       setupMode();
